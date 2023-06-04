@@ -16,7 +16,7 @@ import {
   updateVariantsStock,
 } from "../models/productVariant.js";
 import { ValidationError } from "../utils/errorHandler.js";
-import * as couponModel from "../models/coupon.js"
+import { checkCoupon, getCoupon } from "../models/coupon.js";
 
 dotenv.config();
 
