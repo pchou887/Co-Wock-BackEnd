@@ -4,10 +4,12 @@ import authenticate from "../middleware/authenticate.js"
 
 const router = Router();
 
-router.route("/front/divination").post(getDivinationResult);
+router.route("/front/divination").post([authenticate,getDivinationResult]);
 
-router.route("1.0/ios/divination").post(getDivinationResultForIOS);
+router.route("/ios/divination").post([authenticate,getDivinationResultForIOS]);
 
-router.route("1.0/coupon").post([authenticate, insertUserCoupon]);
+router.route("/v1/coupon").post([authenticate, insertUserCoupon]);
+
+router.route("/coupon").post(insertUserCoupon);
 
 export default router;

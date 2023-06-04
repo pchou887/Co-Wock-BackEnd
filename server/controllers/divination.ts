@@ -2,18 +2,33 @@ import { Request, Response, NextFunction } from "express";
 import * as productModel from "../models/product.js";
 import * as productImageModel from "../models/productImage.js";
 import * as productVariantModel from "../models/productVariant.js";
+import * as userModel from "../models/user.js";
 import  * as couponModel from "../models/coupon.js"
 
 
 export async function getDivinationResult(req: Request, res: Response) {
     try{
-        const color  = "#FFFFFF";
-        const category = "women";
+      console.log(req.body);
+      console.log(res.locals.userId)
+      //add user details
+        const userId = res.locals.userId;
+        const { birthday ,sign ,gender} =req.body.data;
+        const check:any = await userModel.checkUserDetails(userId,birthday ,sign ,gender);
+        if(!check){
+          await userModel.insertUserDetails(userId,birthday ,sign ,gender);
+
+        }
+
+        const color = req.body.data.color;
+        const category = req.body.data.gender;
         const paging = 6;
         const straws = await couponModel.getRandomStraw();
-        const couponRows :any= await couponModel.getRandomCoupon();
+        console.log("1")
+        const couponRows= await couponModel.getRandomCoupon();
+        console.log("2")
         const coupon = couponRows[0];
         const products = await productModel.getProductsByColor({paging,category,color});
+        console.log("3")
         const formattedProducts = products.map((element) => ({
             main_image: element.path,
             title: element.title,
@@ -76,11 +91,21 @@ function mapId<Item extends { id: number }>(item: Item) {
 
 export async function getDivinationResultForIOS(req: Request, res: Response) {
     try{
-        const { color } = req.body;
-        const category = req.body.gender;
+      console.log(req.body);
+      console.log(res.locals.userId)
+      //add user details
+        const userId = res.locals.userId;
+        const { birthday ,sign ,gender} =req.body.data;
+        const check:any = await userModel.checkUserDetails(userId,birthday ,sign ,gender);
+        if(!check){
+          await userModel.insertUserDetails(userId,birthday ,sign ,gender);
+
+        }
+        const color = req.body.data.color;
+        const category = req.body.data.gender;
         const paging = 6;
         const straws = await couponModel.getRandomStraw();
-        const couponRows :any= await couponModel.getRandomCoupon();
+        const couponRows = await couponModel.getRandomCoupon();
         const coupon = couponRows[0];
         const productsData = await productModel.getProductsByColorForIOS({paging,category,color});
         const productIds = productsData?.map?.(mapId);
@@ -104,27 +129,54 @@ export async function getDivinationResultForIOS(req: Request, res: Response) {
             products,
         }})
     }catch(err){
-        res.status(500).json({ errors: "insert coupon failed" });
+      console.log(err)
+      res.status(500).json({ errors: err instanceof Error ? err.message : String(err) });
     }
 }
 
 export async function insertUserCoupon(req: Request, res: Response) {
     try{
-        const { coupon_id } = req.body;
-        const user_id = res.locals.userId;
+       console.log(req.body);
+       console.log(res.locals.userId)
+        const { coupon_id } = req.body.data;
+        const userId = res.locals.userId;
+        const today = new Date();
+
+        // 取得當前星期幾（0 表示星期日，1 表示星期一，以此類推）
+        const currentDayOfWeek = today.getDay();
+        const sundayDate = new Date(today);
+        sundayDate.setDate(today.getDate() - currentDayOfWeek + 7);
+        const year = sundayDate.getFullYear();
+        const month = sundayDate.getMonth() + 1;// JavaScript 的月份是以 0 到 11 來表示，所以要加 1
+        const date = sundayDate.getDate();
+        const expireTime =`${year}-${month}-${date}`;
 
         //判斷這週有沒有領取紀錄
-        const receiveRecord = await couponModel.checkRecord(user_id);
-        if(receiveRecord){
+        const receiveRecord:any = await couponModel.checkRecord(userId);
+        const record = receiveRecord[0];
+        console.log(record);
+        if(!record){
+          console.log("empty");
+          await couponModel.createRecord(userId);
+          await couponModel.insertUserCoupon(userId,coupon_id);
+          res.status(200).send("領取成功" );
+          return;
+        }
+        const date1 = new Date(expireTime);
+        const date2 = new Date(record.expire_time);
+        if(date1.getTime() >= date2.getTime()){
             res.status(403).json({ errors: "這週已領取過"});
             return;
         }
 
-        //insert coupon & create record
-        // const record = await createRecord();
-        const add = await insertUserCoupon(user_id,coupon_id);
+        //update record
+        await couponModel.updateRecord(userId,expireTime);
+
+        //insert coupon 
+        await couponModel.insertUserCoupon(userId,coupon_id);
         res.status(200).send("領取成功" );
     } catch(err){
+      console.log(err);
         if (err instanceof Error) {
             res.status(400).json({ errors: err.message });
             return;

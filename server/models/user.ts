@@ -64,3 +64,47 @@ export async function findUserById(id: string) {
   const users = z.array(UserSchema).parse(results[0]);
   return users[0];
 }
+
+export async function insertUserDetails(user_id:number,birthday:string,sign:string,gender:string) {
+  const results = await pool.query(
+    `
+    INSERT INTO user_details (user_id, birthday, sign,gender)
+    VALUES(?, ?, ?, ?)
+  `,
+    [user_id, birthday, sign,gender]
+  );
+  
+}
+
+// const UserDetailsSchema = z.object({
+//   user_id: z.number(),
+//   birthday: z.string(),
+//   sign: z.string(),    
+//   gender:z.string()
+// });
+
+export async function checkUserDetails(user_id:number,birthday:string,sign:string,gender:string) {
+  const [results] = await pool.query(
+    `
+    SELECT * FROM user_details
+    WHERE user_id = ?
+  `,
+    [user_id]
+  );
+  console.log(results)
+  // const details = results[0] ? z.array(UserDetailsSchema).parse(results[0]) : [];
+  // return details;
+  return results
+}
+
+
+export async function updateUserDetails(user_id:number,birthday:string,sign:string,gender:string) {
+  const [results] = await pool.query(
+    `
+    UPDATE user_details SET birthday = ?, sign = ?, gender = ?
+    WHERE user_id = ?
+    `,
+    [birthday, sign, gender, user_id]
+  );
+  return results
+}
