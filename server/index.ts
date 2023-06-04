@@ -1,4 +1,5 @@
 import express, { Router } from "express";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import productRouter from "./routes/product.js";
 import userRouter from "./routes/user.js";
@@ -16,7 +17,7 @@ const port = 3000;
 
 app.use(cookieParser());
 
-app.enable('trust proxy');
+app.enable("trust proxy");
 
 const router = Router();
 
@@ -25,7 +26,7 @@ router.use(function (req, res, next) {
 });
 
 app.use(express.json());
-
+app.use(cors());
 app.use("/api", rateLimiter, [
   productRouter,
   userRouter,
