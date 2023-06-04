@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.32, for macos13 (arm64)
+-- MySQL dump 10.13  Distrib 8.0.33, for macos13 (arm64)
 --
--- Host: localhost    Database: stylish
+-- Host: localhost    Database: backup
 -- ------------------------------------------------------
--- Server version	8.0.32
+-- Server version	8.0.33
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,6 +46,33 @@ INSERT INTO `campaigns` VALUES (12,148,'瞬間\r\n在城市的角落\r\n找到�
 UNLOCK TABLES;
 
 --
+-- Table structure for table `coupons`
+--
+
+DROP TABLE IF EXISTS `coupons`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `coupons` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `type` enum('deal items','free_shipping','fixed_amout') NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `discount` int NOT NULL,
+  `expire_time` date DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `coupons`
+--
+
+LOCK TABLES `coupons` WRITE;
+/*!40000 ALTER TABLE `coupons` DISABLE KEYS */;
+INSERT INTO `coupons` VALUES (1,'deal items','Coupon 1 - Deal Items',10,'2024-01-01'),(2,'free_shipping','Coupon 2 - Free Shipping',20,'2024-02-01'),(3,'fixed_amout','Coupon 3 - Fixed Amount',30,'2024-03-01'),(4,'deal items','Coupon 4 - Deal Items',40,'2024-04-01'),(5,'fixed_amout','Coupon 5 - Fixed Amount',50,'2024-05-01');
+/*!40000 ALTER TABLE `coupons` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `order_details`
 --
 
@@ -67,7 +94,7 @@ CREATE TABLE `order_details` (
   KEY `product_id` (`product_id`),
   CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
   CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,6 +103,7 @@ CREATE TABLE `order_details` (
 
 LOCK TABLES `order_details` WRITE;
 /*!40000 ALTER TABLE `order_details` DISABLE KEYS */;
+INSERT INTO `order_details` VALUES (6,20005,153,367,'經典商務西裝',1,3999,'2023-06-02 08:31:56','2023-06-02 08:31:56');
 /*!40000 ALTER TABLE `order_details` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -97,7 +125,7 @@ CREATE TABLE `order_recipients` (
   PRIMARY KEY (`id`),
   KEY `order_id` (`order_id`),
   CONSTRAINT `order_recipients_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,6 +134,7 @@ CREATE TABLE `order_recipients` (
 
 LOCK TABLES `order_recipients` WRITE;
 /*!40000 ALTER TABLE `order_recipients` DISABLE KEYS */;
+INSERT INTO `order_recipients` VALUES (5,20005,'林玟芊','888809348205','aoao3218@gmail.com','New y','afternoon');
 /*!40000 ALTER TABLE `order_recipients` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -133,7 +162,7 @@ CREATE TABLE `orders` (
   KEY `user_id` (`user_id`),
   KEY `number` (`number`),
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20005 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20006 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -142,6 +171,7 @@ CREATE TABLE `orders` (
 
 LOCK TABLES `orders` WRITE;
 /*!40000 ALTER TABLE `orders` DISABLE KEYS */;
+INSERT INTO `orders` VALUES (20005,24,1,'f2d13','delivery','credit_card',3999,30,4029,'2023-06-02 08:31:56','2023-06-02 08:31:56');
 /*!40000 ALTER TABLE `orders` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -203,7 +233,7 @@ CREATE TABLE `product_variants` (
 
 LOCK TABLES `product_variants` WRITE;
 /*!40000 ALTER TABLE `product_variants` DISABLE KEYS */;
-INSERT INTO `product_variants` VALUES (324,147,'#FFFFFF','S',1,'白色'),(325,147,'#FFFFFF','M',1,'白色'),(326,147,'#FFFFFF','L',2,'白色'),(327,147,'#DDFFBB','S',9,'亮綠'),(328,147,'#DDFFBB','M',0,'亮綠'),(329,147,'#DDFFBB','L',5,'亮綠'),(330,147,'#CCCCCC','S',8,'淺灰'),(331,147,'#CCCCCC','M',5,'淺灰'),(332,147,'#CCCCCC','L',9,'淺灰'),(333,148,'#DDFFBB','S',7,'亮綠'),(334,148,'#DDFFBB','M',5,'亮綠'),(335,148,'#DDFFBB','L',8,'亮綠'),(336,148,'#CCCCCC','S',1,'淺灰'),(337,148,'#CCCCCC','M',6,'淺灰'),(338,148,'#CCCCCC','L',2,'淺灰'),(339,149,'#DDFFBB','S',3,'亮綠'),(340,149,'#DDFFBB','M',5,'亮綠'),(341,149,'#CCCCCC','S',4,'淺灰'),(342,149,'#CCCCCC','M',1,'淺灰'),(343,149,'#BB7744','S',2,'淺棕'),(344,149,'#BB7744','M',6,'淺棕'),(345,150,'#DDF0FF','S',8,'淺藍'),(346,150,'#DDF0FF','M',5,'淺藍'),(347,150,'#DDF0FF','L',6,'淺藍'),(348,150,'#CCCCCC','S',0,'淺灰'),(349,150,'#CCCCCC','M',6,'淺灰'),(350,150,'#CCCCCC','L',5,'淺灰'),(351,150,'#334455','S',2,'深藍'),(352,150,'#334455','M',7,'深藍'),(353,150,'#334455','L',9,'深藍'),(354,151,'#FFFFFF','M',5,'白色'),(355,151,'#FFFFFF','L',7,'白色'),(356,151,'#FFFFFF','XL',1,'白色'),(357,151,'#DDF0FF','M',1,'淺藍'),(358,151,'#DDF0FF','L',4,'淺藍'),(359,151,'#DDF0FF','XL',3,'淺藍'),(360,152,'#FFFFFF','S',10,'白色'),(361,152,'#FFFFFF','M',5,'白色'),(362,152,'#FFFFFF','L',6,'白色'),(363,152,'#CCCCCC','S',1,'淺灰'),(364,152,'#CCCCCC','M',3,'淺灰'),(365,152,'#CCCCCC','L',9,'淺灰'),(366,153,'#334455','S',9,'深藍'),(367,153,'#334455','M',5,'深藍'),(368,153,'#334455','L',1,'深藍'),(369,153,'#334455','XL',9,'深藍'),(370,154,'#DDF0FF','M',7,'淺藍'),(371,154,'#DDF0FF','L',1,'淺藍'),(372,154,'#BB7744','M',3,'淺棕'),(373,154,'#BB7744','L',1,'淺棕'),(374,155,'#BB7744','M',5,'淺棕'),(375,155,'#BB7744','L',1,'淺棕'),(376,155,'#334455','M',5,'深藍'),(377,155,'#334455','L',2,'深藍'),(378,156,'#FFFFFF','F',1,'白色'),(379,156,'#FFDDDD','F',1,'粉紅'),(380,157,'#FFFFFF','F',4,'白色'),(381,157,'#DDF0FF','F',7,'淺藍'),(382,158,'#FFFFFF','S',0,'白色'),(383,158,'#FFFFFF','M',9,'白色'),(384,158,'#FFDDDD','S',2,'粉紅'),(385,158,'#FFDDDD','M',1,'粉紅'),(386,159,'#DDFFBB','M',3,'亮綠'),(387,159,'#DDFFBB','L',9,'亮綠'),(388,159,'#DDF0FF','M',2,'淺藍'),(389,159,'#DDF0FF','L',6,'淺藍'),(390,160,'#FFFFFF','M',2,'白色'),(391,160,'#FFFFFF','L',6,'白色'),(392,160,'#CCCCCC','M',5,'淺灰'),(393,160,'#CCCCCC','L',8,'淺灰'),(394,161,'#FFFFFF','S',9,'白色'),(395,161,'#FFFFFF','M',4,'白色'),(396,161,'#FFFFFF','L',2,'白色'),(397,161,'#DDF0FF','S',0,'淺藍'),(398,161,'#DDF0FF','M',10,'淺藍'),(399,161,'#DDF0FF','L',5,'淺藍');
+INSERT INTO `product_variants` VALUES (324,147,'#FFFFFF','S',1,'白色'),(325,147,'#FFFFFF','M',1,'白色'),(326,147,'#FFFFFF','L',2,'白色'),(327,147,'#DDFFBB','S',9,'亮綠'),(328,147,'#DDFFBB','M',0,'亮綠'),(329,147,'#DDFFBB','L',5,'亮綠'),(330,147,'#CCCCCC','S',8,'淺灰'),(331,147,'#CCCCCC','M',5,'淺灰'),(332,147,'#CCCCCC','L',9,'淺灰'),(333,148,'#DDFFBB','S',7,'亮綠'),(334,148,'#DDFFBB','M',5,'亮綠'),(335,148,'#DDFFBB','L',8,'亮綠'),(336,148,'#CCCCCC','S',1,'淺灰'),(337,148,'#CCCCCC','M',6,'淺灰'),(338,148,'#CCCCCC','L',2,'淺灰'),(339,149,'#DDFFBB','S',3,'亮綠'),(340,149,'#DDFFBB','M',5,'亮綠'),(341,149,'#CCCCCC','S',4,'淺灰'),(342,149,'#CCCCCC','M',1,'淺灰'),(343,149,'#BB7744','S',2,'淺棕'),(344,149,'#BB7744','M',6,'淺棕'),(345,150,'#DDF0FF','S',8,'淺藍'),(346,150,'#DDF0FF','M',5,'淺藍'),(347,150,'#DDF0FF','L',6,'淺藍'),(348,150,'#CCCCCC','S',0,'淺灰'),(349,150,'#CCCCCC','M',6,'淺灰'),(350,150,'#CCCCCC','L',5,'淺灰'),(351,150,'#334455','S',2,'深藍'),(352,150,'#334455','M',7,'深藍'),(353,150,'#334455','L',9,'深藍'),(354,151,'#FFFFFF','M',5,'白色'),(355,151,'#FFFFFF','L',7,'白色'),(356,151,'#FFFFFF','XL',1,'白色'),(357,151,'#DDF0FF','M',1,'淺藍'),(358,151,'#DDF0FF','L',4,'淺藍'),(359,151,'#DDF0FF','XL',3,'淺藍'),(360,152,'#FFFFFF','S',10,'白色'),(361,152,'#FFFFFF','M',5,'白色'),(362,152,'#FFFFFF','L',6,'白色'),(363,152,'#CCCCCC','S',1,'淺灰'),(364,152,'#CCCCCC','M',3,'淺灰'),(365,152,'#CCCCCC','L',9,'淺灰'),(366,153,'#334455','S',9,'深藍'),(367,153,'#334455','M',4,'深藍'),(368,153,'#334455','L',1,'深藍'),(369,153,'#334455','XL',9,'深藍'),(370,154,'#DDF0FF','M',7,'淺藍'),(371,154,'#DDF0FF','L',1,'淺藍'),(372,154,'#BB7744','M',3,'淺棕'),(373,154,'#BB7744','L',1,'淺棕'),(374,155,'#BB7744','M',5,'淺棕'),(375,155,'#BB7744','L',1,'淺棕'),(376,155,'#334455','M',5,'深藍'),(377,155,'#334455','L',2,'深藍'),(378,156,'#FFFFFF','F',1,'白色'),(379,156,'#FFDDDD','F',1,'粉紅'),(380,157,'#FFFFFF','F',4,'白色'),(381,157,'#DDF0FF','F',7,'淺藍'),(382,158,'#FFFFFF','S',0,'白色'),(383,158,'#FFFFFF','M',9,'白色'),(384,158,'#FFDDDD','S',2,'粉紅'),(385,158,'#FFDDDD','M',1,'粉紅'),(386,159,'#DDFFBB','M',3,'亮綠'),(387,159,'#DDFFBB','L',9,'亮綠'),(388,159,'#DDF0FF','M',2,'淺藍'),(389,159,'#DDF0FF','L',6,'淺藍'),(390,160,'#FFFFFF','M',2,'白色'),(391,160,'#FFFFFF','L',6,'白色'),(392,160,'#CCCCCC','M',5,'淺灰'),(393,160,'#CCCCCC','L',8,'淺灰'),(394,161,'#FFFFFF','S',9,'白色'),(395,161,'#FFFFFF','M',4,'白色'),(396,161,'#FFFFFF','L',2,'白色'),(397,161,'#DDF0FF','S',0,'淺藍'),(398,161,'#DDF0FF','M',10,'淺藍'),(399,161,'#DDF0FF','L',5,'淺藍');
 /*!40000 ALTER TABLE `product_variants` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -252,7 +282,7 @@ CREATE TABLE `roles` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -261,7 +291,86 @@ CREATE TABLE `roles` (
 
 LOCK TABLES `roles` WRITE;
 /*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` VALUES (3,'admin');
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `straws_story`
+--
+
+DROP TABLE IF EXISTS `straws_story`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `straws_story` (
+  `type` enum('大吉籤','上上籤','上中籤','平中籤','平平籤') NOT NULL,
+  `story` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `straws_story`
+--
+
+LOCK TABLES `straws_story` WRITE;
+/*!40000 ALTER TABLE `straws_story` DISABLE KEYS */;
+INSERT INTO `straws_story` VALUES ('大吉籤','風恬浪靜可行舟， \n恰是中秋月一輪， \n凡事不須多憂慮， \n福祿自有慶家門.'),('上上籤','運逢得意身顯變， \n君爾身中皆有益， \n一向前途無難事， \n決意之中保清吉.'),('上中籤','此事何須用心機， \n前途變怪自然知， \n看看此去得和合， \n漸漸脫出見太平.'),('平中籤','東西南北不堪行， \n前途此事正可當， \n勸君把定莫煩惱， \n家門自有保安康.'),('平平籤','危險高山行過盡， \n莫嫌此路有重重， \n若見蘭桂漸漸發， \n長蛇反轉變成龍.');
+/*!40000 ALTER TABLE `straws_story` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_coupons`
+--
+
+DROP TABLE IF EXISTS `user_coupons`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_coupons` (
+  `user_id` bigint unsigned NOT NULL,
+  `coupon_id` bigint unsigned NOT NULL,
+  `used` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`,`coupon_id`),
+  KEY `coupon_id` (`coupon_id`),
+  CONSTRAINT `user_coupons_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `user_coupons_ibfk_2` FOREIGN KEY (`coupon_id`) REFERENCES `coupons` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_coupons`
+--
+
+LOCK TABLES `user_coupons` WRITE;
+/*!40000 ALTER TABLE `user_coupons` DISABLE KEYS */;
+INSERT INTO `user_coupons` VALUES (24,1,0),(24,4,0);
+/*!40000 ALTER TABLE `user_coupons` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_details`
+--
+
+DROP TABLE IF EXISTS `user_details`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_details` (
+  `user_id` bigint unsigned NOT NULL,
+  `birthday` date DEFAULT NULL,
+  `sign` varchar(20) DEFAULT NULL,
+  `gender` enum('women','men','unisex') DEFAULT NULL,
+  PRIMARY KEY (`user_id`),
+  CONSTRAINT `user_details_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_details`
+--
+
+LOCK TABLES `user_details` WRITE;
+/*!40000 ALTER TABLE `user_details` DISABLE KEYS */;
+INSERT INTO `user_details` VALUES (24,'1998-08-08','String','women');
+/*!40000 ALTER TABLE `user_details` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -281,7 +390,7 @@ CREATE TABLE `user_providers` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `user_providers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -290,6 +399,7 @@ CREATE TABLE `user_providers` (
 
 LOCK TABLES `user_providers` WRITE;
 /*!40000 ALTER TABLE `user_providers` DISABLE KEYS */;
+INSERT INTO `user_providers` VALUES (15,24,'native','$argon2id$v=19$m=65536,t=3,p=4$uDz5mRJSfksAv4CIF7fQhQ$xIIPmg6rVHq8jclvq2M32gUr9dJJ29mVfvU9MjSdvj4','2023-06-01 16:58:38','2023-06-01 16:58:38');
 /*!40000 ALTER TABLE `user_providers` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -316,6 +426,7 @@ CREATE TABLE `user_role` (
 
 LOCK TABLES `user_role` WRITE;
 /*!40000 ALTER TABLE `user_role` DISABLE KEYS */;
+INSERT INTO `user_role` VALUES (24,3);
 /*!40000 ALTER TABLE `user_role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -335,7 +446,7 @@ CREATE TABLE `users` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -344,7 +455,33 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (24,'1234@gmail.com','admin',NULL,'2023-06-01 16:58:38','2023-06-01 16:58:38');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `week_straws`
+--
+
+DROP TABLE IF EXISTS `week_straws`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `week_straws` (
+  `user_id` bigint unsigned NOT NULL,
+  `expire_time` date DEFAULT NULL,
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `week_straws_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `week_straws`
+--
+
+LOCK TABLES `week_straws` WRITE;
+/*!40000 ALTER TABLE `week_straws` DISABLE KEYS */;
+INSERT INTO `week_straws` VALUES (24,'2023-06-11');
+/*!40000 ALTER TABLE `week_straws` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -356,4 +493,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-18 22:30:18
+-- Dump completed on 2023-06-04 15:44:27
