@@ -16,7 +16,7 @@ import {
   updateVariantsStock,
 } from "../models/productVariant.js";
 import { ValidationError } from "../utils/errorHandler.js";
-import { checkCoupon, getCoupon } from "../models/coupon.js";
+import * as couponModel from "../models/coupon.js"
 
 dotenv.config();
 
@@ -324,5 +324,28 @@ export async function checkout(req: Request, res: Response) {
     res.status(500).json({ errors: "checkout failed" });
   } finally {
     connection.release();
+  }
+}
+
+export async function getUserCoupons(req: Request, res: Response) {
+  try {
+    const userId = res.locals.userId;
+    const userCoupons = await couponModel.getUserCoupons(userId);
+    const coupons = userCoupons.map((item) => ({
+      id: item.id,
+      type: item.type,
+      description: item.description,
+      discount: item.discount,
+      expire_time: item.expire_time,
+      used: Boolean(item.used),
+}))
+    res.status(200).json({
+      data:{
+        coupon:coupons
+      }
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ errors: err instanceof Error ? err.message : String(err) });
   }
 }

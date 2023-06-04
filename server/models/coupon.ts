@@ -111,3 +111,25 @@ export async function updateRecord(user_id: number, expireTime: string) {
   );
   return results;
 }
+
+const UserCouponsSchema = z.object({
+  id: z.number(),
+  type: z.string(),
+  description: z.string(),    
+  discount: z.number(),
+  expire_time:z.date(),
+  used:z.number(),
+});
+
+export async function getUserCoupons(user_id:number) {
+  const results =await pool.query(
+    `
+    SELECT c.* ,uc.used
+    From user_coupons AS uc
+    JOIN coupons AS c ON c.id = uc.coupon_id
+    WHERE user_id =?
+    `,
+    [user_id])
+  const coupons = z.array(UserCouponsSchema).parse(results[0]);
+  return coupons;
+}
