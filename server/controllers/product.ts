@@ -18,8 +18,12 @@ function mapImages(imagesObj: {
 }) {
   return <Product extends { id: number }>(product: Product) => ({
     ...product,
-    main_image: `${imagesObj[product.id]?.main_image}` ?? "",
-    images: imagesObj[product.id]?.images?.map?.((image) => `${image}`) ?? [],
+    main_image:
+      `https://hyperushle.com${imagesObj[product.id]?.main_image}` ?? "",
+    images:
+      imagesObj[product.id]?.images?.map?.(
+        (image) => `https://hyperushle.com${image}`
+      ) ?? [],
   });
 }
 

@@ -14,7 +14,7 @@ import rateLimiter from "./middleware/rateLimiter.js";
 import { errorHandler } from "./utils/errorHandler.js";
 
 const app = express();
-const port = 3000;
+const port = 3001;
 
 app.use(cookieParser());
 
@@ -34,7 +34,7 @@ app.use("/api", rateLimiter, [
   campaignRouter,
   orderRouter,
   reportRouter,
-  couponRouter
+  couponRouter,
 ]);
 
 app.use(
