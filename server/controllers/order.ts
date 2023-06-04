@@ -17,6 +17,7 @@ import {
 } from "../models/productVariant.js";
 import { ValidationError } from "../utils/errorHandler.js";
 import { checkCoupon, getCoupon } from "../models/coupon.js";
+import * as couponModel from "../models/coupon.js"
 
 dotenv.config();
 
@@ -166,6 +167,7 @@ async function checkProducts(inputList: ProductInput[]): Promise<Product[]> {
 
 async function placeOrder({
   userId,
+  orderInfo,
   recipient,
   products,
   connection,

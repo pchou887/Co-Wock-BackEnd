@@ -32,20 +32,20 @@ export async function getDivinationResult(req: Request, res: Response) {
       color,
     });
     const formattedProducts = products.map((element) => ({
+      id:element.id,
       main_image: element.path,
       title: element.title,
       price: element.price,
-      product_url: `/product.html?id=${element.id}`,
     }));
     res.status(200).json({
       data: {
-        straws_story: straws,
+        straws_story: straws[0],
         coupon_id: coupon.id,
         coupon_name: coupon.type,
         description: coupon.description,
         discount: coupon.discount,
         valid_date: coupon.expire_time,
-        products: formattedProducts,
+        products:formattedProducts,
       },
     });
   } catch (err) {
@@ -94,7 +94,7 @@ export async function getDivinationResultForIOS(req: Request, res: Response) {
 
     res.status(200).json({
       data: {
-        straws_story: straws,
+        straws_story: straws[0],
         coupon_id: coupon.id,
         coupon_name: coupon.type,
         description: coupon.description,

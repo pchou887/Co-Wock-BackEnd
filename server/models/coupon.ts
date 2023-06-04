@@ -35,14 +35,21 @@ export async function getRandomCoupon() {
   return coupon;
 }
 
+const StrawSchema = z.object({
+  type: z.string(),
+  story: z.string(),
+});
+
 export async function getRandomStraw() {
-  const [results] = await pool.query(
+  const results = await pool.query(
     `SELECT *
     FROM straws_story
     ORDER BY RAND()
     LIMIT 1;`
   );
-  return results;
+  const straw = z.array(StrawSchema).parse(results[0]);
+
+  return straw;
 }
 
 export async function getCoupon(coupon_id: number) {
