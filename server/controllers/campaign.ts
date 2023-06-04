@@ -5,6 +5,7 @@ import * as campaignModel from "../models/campaign.js";
 import { isProductExist } from "../models/product.js";
 import * as productImageModel from "../models/productImage.js";
 import * as productVariantModel from "../models/productVariant.js";
+import { mapId,mapImages,mapVariants} from "../controllers/product.js"
 
 const CACHE_KEY = cache.getCampaignKey();
 
@@ -68,45 +69,6 @@ export async function createCampaign(req: Request, res: Response) {
     res.status(500).json({ errors: "create campaigns failed" });
   }
 }
-
-function mapId<Item extends { id: number }>(item: Item) {
-  return item.id;
-}
-
-function mapImages(imagesObj: {
-  [productId: string]: { main_image: string; images: string[] };
-}) {
-  return <Product extends { id: number }>(product: Product) => ({
-    ...product,
-    main_image: `${imagesObj[product.id]?.main_image}` ?? "",
-    images: imagesObj[product.id]?.images?.map?.((image) => `${image}`) ?? [],
-  });
-}
-
-function mapVariants(variantsObj: {
-  [productId: string]: {
-    variants: {
-      color_code: string;
-      size: string;
-      stock: number;
-    }[];
-    sizes: Set<string>;
-    colorsMap: { [colorCode: string]: string };
-  };
-}) {
-  return <Product extends { id: number }>(product: Product) => ({
-    ...product,
-    ...variantsObj[product.id],
-    sizes: Array.from(variantsObj[product.id].sizes),
-    colors: Object.entries(variantsObj[product.id].colorsMap).map(
-      ([key, value]) => ({
-        code: key,
-        name: value,
-      })
-    ),
-  });
-}
-
 
 export async function getCampaignsForIOS(req: Request, res: Response) {
   try {

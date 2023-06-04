@@ -4,6 +4,7 @@ import * as productImageModel from "../models/productImage.js";
 import * as productVariantModel from "../models/productVariant.js";
 import * as userModel from "../models/user.js";
 import * as couponModel from "../models/coupon.js";
+import { mapId,mapImages,mapVariants} from "../controllers/product.js"
 
 export async function getDivinationResult(req: Request, res: Response) {
   try {
@@ -21,12 +22,12 @@ export async function getDivinationResult(req: Request, res: Response) {
       }
     }
     const category = gender;
-    const paging = 6;
+    const limit = 6;
     const straws = await couponModel.getRandomStraw();
     const couponRows = await couponModel.getRandomCoupon();
     const coupon = couponRows[0];
     const products = await productModel.getProductsByColor({
-      paging,
+      limit,
       category,
       color,
     });
@@ -55,44 +56,6 @@ export async function getDivinationResult(req: Request, res: Response) {
   }
 }
 
-function mapId<Item extends { id: number }>(item: Item) {
-  return item.id;
-}
-
-function mapImages(imagesObj: {
-  [productId: string]: { main_image: string; images: string[] };
-}) {
-  return <Product extends { id: number }>(product: Product) => ({
-    ...product,
-    main_image: `${imagesObj[product.id]?.main_image}` ?? "",
-    images: imagesObj[product.id]?.images?.map?.((image) => `${image}`) ?? [],
-  });
-}
-
-function mapVariants(variantsObj: {
-  [productId: string]: {
-    variants: {
-      color_code: string;
-      size: string;
-      stock: number;
-    }[];
-    sizes: Set<string>;
-    colorsMap: { [colorCode: string]: string };
-  };
-}) {
-  return <Product extends { id: number }>(product: Product) => ({
-    ...product,
-    ...variantsObj[product.id],
-    sizes: Array.from(variantsObj[product.id].sizes),
-    colors: Object.entries(variantsObj[product.id].colorsMap).map(
-      ([key, value]) => ({
-        code: key,
-        name: value,
-      })
-    ),
-  });
-}
-
 export async function getDivinationResultForIOS(req: Request, res: Response) {
   try {
     const { birthday, sign, gender, color } = req.body.data;
@@ -109,12 +72,12 @@ export async function getDivinationResultForIOS(req: Request, res: Response) {
       }
     }
     const category = gender;
-    const paging = 6;
+    const limit = 6;
     const straws = await couponModel.getRandomStraw();
     const couponRows = await couponModel.getRandomCoupon();
     const coupon = couponRows[0];
     const productsData = await productModel.getProductsByColorForIOS({
-      paging,
+      limit,
       category,
       color,
     });
