@@ -27,6 +27,9 @@ export async function getCampaigns() {
     `SELECT id, product_id, story, picture FROM campaigns;`
   );
   const campaigns = z.array(CampaignSchema).parse(results[0]);
+  campaigns.forEach(
+    (ele) => (ele.picture = `https://hyperushle.com${ele.picture}`)
+  );
   return campaigns;
 }
 
