@@ -16,6 +16,7 @@ import {
   updateVariantsStock,
 } from "../models/productVariant.js";
 import { ValidationError } from "../utils/errorHandler.js";
+import { checkCoupon, getCoupon } from "../models/coupon.js";
 
 dotenv.config();
 
@@ -165,7 +166,6 @@ async function checkProducts(inputList: ProductInput[]): Promise<Product[]> {
 
 async function placeOrder({
   userId,
-  orderInfo,
   recipient,
   products,
   connection,
@@ -268,11 +268,25 @@ export async function checkout(req: Request, res: Response) {
   try {
     const userId = res.locals.userId;
     const { prime, order } = req.body;
-    const { shipping, payment, subtotal, freight, total, recipient, list } =
-      order;
+    const {
+      coupon_id,
+      shipping,
+      payment,
+      subtotal,
+      freight,
+      total,
+      recipient,
+      list,
+    } = order;
 
     const products = await checkProducts(list);
-
+    if (coupon_id) {
+      const couponUsed = await checkCoupon(userId, coupon_id);
+      if (couponUsed) throw new ValidationError("invalid coupon used");
+    }
+    const discount = coupon_id ? await getCoupon(coupon_id) : 0;
+    if (subtotal + freight - discount !== total)
+      throw new ValidationError("invalid total price");
     const { orderId, orderNumber } = await placeOrder({
       userId,
       orderInfo: {

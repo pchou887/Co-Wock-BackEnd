@@ -1,25 +1,28 @@
-import { RowDataPacket, OkPacket, ResultSetHeader } from 'mysql2/promise';
+import { RowDataPacket, OkPacket, ResultSetHeader } from "mysql2/promise";
 import { z } from "zod";
 import pool from "./databasePool.js";
 
-export async function insertUserCoupon(user_id:number, coupon_id:number) {
-  try{
-    const [results] = await pool.query(`
+export async function insertUserCoupon(user_id: number, coupon_id: number) {
+  try {
+    const [results] = await pool.query(
+      `
       INSERT INTO user_coupons (user_id, coupon_id)
       VALUES (?, ?)
-    `, [user_id, coupon_id]);
+    `,
+      [user_id, coupon_id]
+    );
     return results;
   } catch (err) {
-    throw Error ("優惠卷已領取過")
+    throw Error("優惠卷已領取過");
   }
-  }
-  const RandomCouponSchema = z.object({
-    id: z.number(),
-    type: z.string(),
-    description: z.string(),    
-    discount: z.number(),
-    expire_time:z.date(),
-  });
+}
+const RandomCouponSchema = z.object({
+  id: z.number(),
+  type: z.string(),
+  description: z.string(),
+  discount: z.number(),
+  expire_time: z.date(),
+});
 
 export async function getRandomCoupon() {
   const results = await pool.query(
@@ -38,16 +41,45 @@ export async function getRandomStraw() {
     FROM straws_story
     ORDER BY RAND()
     LIMIT 1;`
-  )
+  );
   return results;
 }
 
-export async function checkRecord(user_id:number) {
-  const [results] = await pool.query(`SELECT expire_time FROM week_straws WHERE user_id = ?`, [user_id]);
-  return results; 
+export async function getCoupon(coupon_id: number) {
+  const [results] = await pool.query(
+    `SELECT * FROM coupon WHERE coupon_id = ?`,
+    [coupon_id]
+  );
+  const coupon = z.array(RandomCouponSchema).parse(results);
+  return coupon[0].discount;
 }
 
-export async function createRecord(user_id:number) {
+const checkCouponSchema = z.object({
+  user_id: z.number(),
+  coupon_id: z.number(),
+  used: z.boolean(),
+});
+
+export async function checkCoupon(user_id: number, coupon_id: number) {
+  const [results] = await pool.query(
+    `SELECT * FROM user_coupon WHERE user_id = ?`,
+    [user_id]
+  );
+  const user_coupon = z.array(checkCouponSchema).parse(results);
+  const result = user_coupon.filter((ele) => ele.coupon_id === coupon_id);
+
+  return result ? result : true;
+}
+
+export async function checkRecord(user_id: number) {
+  const [results] = await pool.query(
+    `SELECT expire_time FROM week_straws WHERE user_id = ?`,
+    [user_id]
+  );
+  return results;
+}
+
+export async function createRecord(user_id: number) {
   const today = new Date();
 
   // 取得當前星期幾（0 表示星期日，1 表示星期一，以此類推）
@@ -64,15 +96,18 @@ export async function createRecord(user_id:number) {
   const date = sundayDate.getDate();
 
   // 输出结果
-  const expireTime =`${year}-${month}-${date}`;
+  const expireTime = `${year}-${month}-${date}`;
   console.log(`當週星期日為：${year}-${month}-${date}`);
   const [results] = await pool.query(
-    `INSERT INTO  week_straws (user_id, expire_time) VALUES(?,?)`, [user_id,expireTime]);
+    `INSERT INTO  week_straws (user_id, expire_time) VALUES(?,?)`,
+    [user_id, expireTime]
+  );
   return results;
 }
 
-export async function updateRecord(user_id:number,expireTime:string) {
+export async function updateRecord(user_id: number, expireTime: string) {
   const [results] = await pool.query(
-    `UPDATE week_straws set expire_time="${expireTime}" WHERE user_id=${expireTime}`);
+    `UPDATE week_straws set expire_time="${expireTime}" WHERE user_id=${expireTime}`
+  );
   return results;
 }

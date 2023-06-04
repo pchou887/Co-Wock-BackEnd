@@ -17,6 +17,7 @@ const app = express();
 const port = 3001;
 
 app.use(cookieParser());
+app.use(cors());
 
 app.enable("trust proxy");
 
@@ -27,7 +28,6 @@ router.use(function (req, res, next) {
 });
 
 app.use(express.json());
-app.use(cors());
 app.use("/api", rateLimiter, [
   productRouter,
   userRouter,

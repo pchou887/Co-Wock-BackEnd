@@ -202,7 +202,6 @@ export async function getProductsByIds(ids: number[]) {
   return products;
 }
 
-
 const ProductByColorSchema = z.object({
   id: z.number(),
   title: z.string(),
@@ -210,15 +209,14 @@ const ProductByColorSchema = z.object({
   price: z.number(),
 });
 
-
 export async function getProductsByColor({
   paging = 0,
   category,
-  color
+  color,
 }: {
   paging: number;
   category: string;
-  color:string;
+  color: string;
 }) {
   const results = await pool.query(
     `
@@ -228,8 +226,8 @@ export async function getProductsByColor({
     JOIN product_images AS pm ON pv.product_id = pm.product_id
     ${
       CategorySchema.safeParse(category).success
-        ? `WHERE p.category = "${category}" AND pv.color ="${color}" AND pm.field_name ="main_image"` 
-        : `WHERE pv.color ="${color} AND pm.field_name ="main_image"`
+        ? `WHERE p.category = "${category}" AND pv.color ="${color}" AND pm.field_name ="main_image"`
+        : `WHERE pv.color ="${color}" AND pm.field_name ="main_image"`
     }
     ORDER BY RAND()
     LIMIT ${paging} 
@@ -240,15 +238,14 @@ export async function getProductsByColor({
   return products;
 }
 
-
 export async function getProductsByColorForIOS({
   paging = 0,
   category,
-  color
+  color,
 }: {
   paging: number;
   category: string;
-  color:string;
+  color: string;
 }) {
   const results = await pool.query(
     `
@@ -257,8 +254,8 @@ export async function getProductsByColorForIOS({
     JOIN products AS p ON pv.product_id = p.id
     ${
       CategorySchema.safeParse(category).success
-        ? `WHERE p.category = "${category}" AND pv.color ="${color}"` 
-        : `WHERE pv.color ="${color}`
+        ? `WHERE p.category = "${category}" AND pv.color ="${color}"`
+        : `WHERE pv.color ="${color}"`
     }
     ORDER BY RAND()
     LIMIT ${paging} 
