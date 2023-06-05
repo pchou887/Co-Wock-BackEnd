@@ -1,5 +1,5 @@
 import { ResultSetHeader } from "mysql2";
-import { z } from "zod";
+import { number, z } from "zod";
 import pool from "./databasePool.js";
 
 /*
@@ -234,10 +234,10 @@ export async function getProductsByColor({
     `
   );
   const products = z.array(ProductByColorSchema).parse(results[0]);
- if(products.length < limit){
-  const limit2 =limit -products.length;
-  const results2 = await pool.query(
-    `
+  if (products.length < limit) {
+    const limit2 = limit - products.length;
+    const results2 = await pool.query(
+      `
     SELECT DISTINCT p.id,p.title, pm.path, p.price 
     FROM product_variants AS pv
     JOIN products AS p ON pv.product_id = p.id
@@ -246,10 +246,10 @@ export async function getProductsByColor({
     ORDER BY RAND()
     LIMIT ${limit2}  
     `
-  );
-  const products2 = z.array(ProductByColorSchema).parse(results2[0]);
-  return [...products,...products2]
- }
+    );
+    const products2 = z.array(ProductByColorSchema).parse(results2[0]);
+    return [...products, ...products2];
+  }
   return products;
 }
 
@@ -277,8 +277,8 @@ export async function getProductsByColorForIOS({
     `
   );
   const products = z.array(ProductSchema).parse(results[0]);
-  if(products.length < limit){
-    const limit2 =limit -products.length;
+  if (products.length < limit) {
+    const limit2 = limit - products.length;
     const results2 = await pool.query(
       `
       SELECT DISTINCT p.*
@@ -289,7 +289,51 @@ export async function getProductsByColorForIOS({
       `
     );
     const products2 = z.array(ProductSchema).parse(results2[0]);
-    return [...products,...products2]
-   }
+    return [...products, ...products2];
+  }
   return products;
+}
+
+const ChatboxFrontSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  description: z.string(),
+  texture: z.string(),
+  place: z.string(),
+});
+
+export async function getChatboxProductForFront(type: string) {
+  const [result] =
+    type === "dress" || type === "jeans"
+      ? await pool.query(
+          `SELECT id, title, description, texture, place 
+          FROM products WHERE title LIKE ? ORDER BY RAND() LIMIT 1`,
+          [`%${type === "dress" ? "洋裝" : "牛仔褲"}%`]
+        )
+      : type === "hots"
+      ? await pool.query(
+          `SELECT id, title, description, texture, place FROM products ORDER BY RAND() LIMIT 1`
+        )
+      : await pool.query(
+          `SELECT id, title, description, texture, place FROM products ORDER BY id DESC LIMIT 1`
+        );
+  const product = z.array(ChatboxFrontSchema).parse(result);
+
+  return product;
+}
+export async function getChatboxProductForiOS(type: string) {
+  const [result] =
+    type === "dress" || type === "jeans"
+      ? await pool.query(
+          `SELECT * FROM products 
+          WHERE title LIKE ? ORDER BY RAND() LIMIT 1`,
+          [`%${type === "dress" ? "洋裝" : "牛仔褲"}%`]
+        )
+      : type === "hots"
+      ? await pool.query(`SELECT * FROM products ORDER BY RAND() LIMIT 1`)
+      : await pool.query(`SELECT * FROM products ORDER BY id DESC LIMIT 1`);
+
+  const product = z.array(ProductSchema).parse(result);
+
+  return product;
 }

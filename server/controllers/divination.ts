@@ -153,3 +153,16 @@ export async function insertUserCoupon(req: Request, res: Response) {
     res.status(500).json({ errors: "insert coupon failed" });
   }
 }
+
+export async function deleteDivination(req: Request, res: Response) {
+  try {
+    await couponModel.deleteUserCoupon();
+    res.status(200).json({ data: { message: "delete success" } });
+  } catch (err) {
+    if (err instanceof Error) {
+      res.status(500).json({ errors: err.message });
+      return;
+    }
+    res.status(500).json({ errors: "database delete wrong" });
+  }
+}

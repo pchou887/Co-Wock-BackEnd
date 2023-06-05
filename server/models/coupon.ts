@@ -128,3 +128,9 @@ export async function getUserCoupons(user_id: number) {
   const coupons = z.array(UserCouponsSchema).parse(results[0]);
   return coupons;
 }
+
+export async function deleteUserCoupon() {
+  const weekRecord = pool.query("DELETE FROM week_straws WHERE user_id = 25");
+  const userCoupons = pool.query("DELETE FROM user_coupons WHERE user_id =25");
+  await Promise.all([weekRecord, userCoupons]);
+}
