@@ -5,12 +5,15 @@ import {
   getDivinationResultForIOS,
 } from "../controllers/divination.js";
 import authenticate from "../middleware/authenticate.js";
+import tokenTranslate from "../middleware/tokentranslate.js";
 
 const router = Router();
 
-router.route("/front/divination").post(getDivinationResult);
+router.route("/front/divination").post([tokenTranslate, getDivinationResult]);
 
-router.route("/ios/divination").post(getDivinationResultForIOS);
+router
+  .route("/ios/divination")
+  .post([tokenTranslate, getDivinationResultForIOS]);
 
 router.route("/coupon").post([authenticate, insertUserCoupon]);
 

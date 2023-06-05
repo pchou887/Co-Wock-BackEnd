@@ -210,11 +210,11 @@ const ProductByColorSchema = z.object({
 });
 
 export async function getProductsByColor({
-  paging = 0,
+  limit = 0,
   category,
   color,
 }: {
-  paging: number;
+  limit: number;
   category: string;
   color: string;
 }) {
@@ -230,20 +230,35 @@ export async function getProductsByColor({
         : `WHERE pv.color ="${color}" AND pm.field_name ="main_image"`
     }
     ORDER BY RAND()
-    LIMIT ${paging} 
+    LIMIT ${limit} 
     `
   );
   const products = z.array(ProductByColorSchema).parse(results[0]);
-
+ if(products.length < limit){
+  const limit2 =limit -products.length;
+  const results2 = await pool.query(
+    `
+    SELECT DISTINCT p.id,p.title, pm.path, p.price 
+    FROM product_variants AS pv
+    JOIN products AS p ON pv.product_id = p.id
+    JOIN product_images AS pm ON pv.product_id = pm.product_id
+    WHERE pm.field_name ="main_image"
+    ORDER BY RAND()
+    LIMIT ${limit2}  
+    `
+  );
+  const products2 = z.array(ProductByColorSchema).parse(results2[0]);
+  return [...products,...products2]
+ }
   return products;
 }
 
 export async function getProductsByColorForIOS({
-  paging = 0,
+  limit = 0,
   category,
   color,
 }: {
-  paging: number;
+  limit: number;
   category: string;
   color: string;
 }) {
@@ -258,10 +273,23 @@ export async function getProductsByColorForIOS({
         : `WHERE pv.color ="${color}"`
     }
     ORDER BY RAND()
-    LIMIT ${paging} 
+    LIMIT ${limit} 
     `
   );
   const products = z.array(ProductSchema).parse(results[0]);
-
+  if(products.length < limit){
+    const limit2 =limit -products.length;
+    const results2 = await pool.query(
+      `
+      SELECT DISTINCT p.*
+      FROM product_variants AS pv
+      JOIN products AS p ON pv.product_id = p.id
+      ORDER BY RAND()
+      LIMIT ${limit2} 
+      `
+    );
+    const products2 = z.array(ProductSchema).parse(results2[0]);
+    return [...products,...products2]
+   }
   return products;
 }
