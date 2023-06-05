@@ -50,3 +50,29 @@ export async function createCampaign(
   }
   throw new Error("create campaign failed");
 }
+
+export const CategorySchema = z.enum(["men", "women", "accessories"]);
+const ProductSchema = z.object({
+  id: z.number(),
+  category: CategorySchema,
+  title: z.string(),
+  description: z.string(),
+  price: z.number(),
+  texture: z.string(),
+  wash: z.string(),
+  place: z.string(),
+  note: z.string(),
+  story: z.string(),
+});
+
+export async function getCampaignsFroIOS() {
+  const results = await pool.query(
+    `
+    SELECT * FROM products
+    ORDER BY RAND()
+    LIMIT 4
+  `
+  );
+  const products = z.array(ProductSchema).parse(results[0]);
+  return products;
+}
