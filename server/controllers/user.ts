@@ -114,9 +114,9 @@ async function getFbProfileData(userToken: string) {
 export async function fbLogin(req: Request, res: Response) {
   try {
     const { access_token: userToken } = req.body;
-    if (!(await isFbTokenValid(userToken))) {
-      throw new Error("invalid access_token");
-    }
+    // if (!(await isFbTokenValid(userToken))) {
+    //   throw new Error("invalid access_token");
+    // }
     const profile = await getFbProfileData(userToken);
 
     const user = await userModel.findUser(profile.email);

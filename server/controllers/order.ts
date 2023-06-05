@@ -83,7 +83,7 @@ async function payByPrime({
 
 interface ProductInput {
   id: number;
-  title: string;
+  name: string;
   price: number;
   color: { code: string; name: string };
   size: string;
@@ -253,7 +253,7 @@ async function confirmOrder({
       prime,
       recipient,
       amount,
-      details: products[0].title,
+      details: products[0].name,
       orderNumber,
     });
 
@@ -283,7 +283,7 @@ export async function checkout(req: Request, res: Response) {
     const products = await checkProducts(list);
     if (coupon_id) {
       const couponUsed = await couponModel.checkCoupon(userId, coupon_id);
-      if (!couponUsed) throw new ValidationError("invalid coupon used");
+      if (couponUsed) throw new ValidationError("invalid coupon used");
     }
     const discount = coupon_id ? await couponModel.getCoupon(coupon_id) : 0;
     if (subtotal + freight - discount !== total)

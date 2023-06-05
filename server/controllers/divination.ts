@@ -130,7 +130,7 @@ export async function insertUserCoupon(req: Request, res: Response) {
     if (!record) {
       await couponModel.createRecord(userId, expireTime);
       await couponModel.insertUserCoupon(userId, coupon_id);
-      res.status(200).send("領取成功");
+      res.status(200).json({ data: { message: "領取成功" } });
       return;
     }
     const date1 = new Date(expireTime);
@@ -143,7 +143,7 @@ export async function insertUserCoupon(req: Request, res: Response) {
     await couponModel.updateRecord(userId, expireTime);
     await couponModel.insertUserCoupon(userId, coupon_id);
 
-    res.status(200).send("領取成功");
+    res.status(200).json({ data: { message: "領取成功" } });
   } catch (err) {
     console.log(err);
     if (err instanceof Error) {

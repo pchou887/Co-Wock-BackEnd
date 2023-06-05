@@ -5,7 +5,7 @@ import * as campaignModel from "../models/campaign.js";
 import { isProductExist } from "../models/product.js";
 import * as productImageModel from "../models/productImage.js";
 import * as productVariantModel from "../models/productVariant.js";
-import { mapId,mapImages,mapVariants} from "../controllers/product.js"
+import { mapId, mapImages, mapVariants } from "../controllers/product.js";
 
 const CACHE_KEY = cache.getCampaignKey();
 
@@ -82,13 +82,15 @@ export async function getCampaignsForIOS(req: Request, res: Response) {
     const variantsObj = productVariantModel.groupVariants(variants);
     const products = productsData
       .map(mapImages(imagesObj))
-      .map(mapVariants(variantsObj));  
+      .map(mapVariants(variantsObj));
 
     res.status(200).json({
-      data: {
-        title :"熱門商品",
-        products : products
-      }
+      data: [
+        {
+          title: "熱門商品",
+          products: products,
+        },
+      ],
     });
   } catch (err) {
     if (err instanceof Error) {
