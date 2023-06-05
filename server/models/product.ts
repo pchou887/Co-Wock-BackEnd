@@ -201,3 +201,95 @@ export async function getProductsByIds(ids: number[]) {
   const products = z.array(PartialProductSchema).parse(results[0]);
   return products;
 }
+
+const ProductByColorSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  path: z.string(),
+  price: z.number(),
+});
+
+export async function getProductsByColor({
+  limit = 0,
+  category,
+  color,
+}: {
+  limit: number;
+  category: string;
+  color: string;
+}) {
+  const results = await pool.query(
+    `
+    SELECT DISTINCT p.id,p.title, pm.path, p.price 
+    FROM product_variants AS pv
+    JOIN products AS p ON pv.product_id = p.id
+    JOIN product_images AS pm ON pv.product_id = pm.product_id
+    ${
+      CategorySchema.safeParse(category).success
+        ? `WHERE p.category = "${category}" AND pv.color ="${color}" AND pm.field_name ="main_image"`
+        : `WHERE pv.color ="${color}" AND pm.field_name ="main_image"`
+    }
+    ORDER BY RAND()
+    LIMIT ${limit} 
+    `
+  );
+  const products = z.array(ProductByColorSchema).parse(results[0]);
+ if(products.length < limit){
+  const limit2 =limit -products.length;
+  const results2 = await pool.query(
+    `
+    SELECT DISTINCT p.id,p.title, pm.path, p.price 
+    FROM product_variants AS pv
+    JOIN products AS p ON pv.product_id = p.id
+    JOIN product_images AS pm ON pv.product_id = pm.product_id
+    WHERE pm.field_name ="main_image"
+    ORDER BY RAND()
+    LIMIT ${limit2}  
+    `
+  );
+  const products2 = z.array(ProductByColorSchema).parse(results2[0]);
+  return [...products,...products2]
+ }
+  return products;
+}
+
+export async function getProductsByColorForIOS({
+  limit = 0,
+  category,
+  color,
+}: {
+  limit: number;
+  category: string;
+  color: string;
+}) {
+  const results = await pool.query(
+    `
+    SELECT DISTINCT p.*
+    FROM product_variants AS pv
+    JOIN products AS p ON pv.product_id = p.id
+    ${
+      CategorySchema.safeParse(category).success
+        ? `WHERE p.category = "${category}" AND pv.color ="${color}"`
+        : `WHERE pv.color ="${color}"`
+    }
+    ORDER BY RAND()
+    LIMIT ${limit} 
+    `
+  );
+  const products = z.array(ProductSchema).parse(results[0]);
+  if(products.length < limit){
+    const limit2 =limit -products.length;
+    const results2 = await pool.query(
+      `
+      SELECT DISTINCT p.*
+      FROM product_variants AS pv
+      JOIN products AS p ON pv.product_id = p.id
+      ORDER BY RAND()
+      LIMIT ${limit2} 
+      `
+    );
+    const products2 = z.array(ProductSchema).parse(results2[0]);
+    return [...products,...products2]
+   }
+  return products;
+}

@@ -6,6 +6,7 @@ import userRouter from "./routes/user.js";
 import campaignRouter from "./routes/campaign.js";
 import orderRouter from "./routes/order.js";
 import reportRouter from "./routes/report.js";
+import couponRouter from "./routes/divination.js";
 import branch from "./middleware/branch.js";
 import authenticate from "./middleware/authenticate.js";
 import authorization from "./middleware/authorization.js";
@@ -16,6 +17,7 @@ const app = express();
 const port = 3000;
 
 app.use(cookieParser());
+app.use(cors());
 
 app.enable("trust proxy");
 
@@ -33,6 +35,7 @@ app.use("/api", rateLimiter, [
   campaignRouter,
   orderRouter,
   reportRouter,
+  couponRouter,
 ]);
 
 app.use(

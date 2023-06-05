@@ -3,6 +3,7 @@ import {
   getCampaigns,
   checkProductExist,
   createCampaign,
+  getCampaignsForIOS,
 } from "../controllers/campaign.js";
 import { uploadToDisk } from "../middleware/multer.js";
 
@@ -17,5 +18,9 @@ router
     checkProductExist,
     createCampaign
   );
+
+
+  router.route("/marketing/hots").get(getCampaignsForIOS);
+
 
 export default router;

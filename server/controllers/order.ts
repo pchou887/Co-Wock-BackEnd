@@ -16,6 +16,7 @@ import {
   updateVariantsStock,
 } from "../models/productVariant.js";
 import { ValidationError } from "../utils/errorHandler.js";
+import * as couponModel from "../models/coupon.js";
 
 dotenv.config();
 
@@ -82,7 +83,7 @@ async function payByPrime({
 
 interface ProductInput {
   id: number;
-  title: string;
+  name: string;
   price: number;
   color: { code: string; name: string };
   size: string;
@@ -252,7 +253,7 @@ async function confirmOrder({
       prime,
       recipient,
       amount,
-      details: products[0].title,
+      details: products[0].name,
       orderNumber,
     });
 
@@ -268,11 +269,25 @@ export async function checkout(req: Request, res: Response) {
   try {
     const userId = res.locals.userId;
     const { prime, order } = req.body;
-    const { shipping, payment, subtotal, freight, total, recipient, list } =
-      order;
+    const {
+      coupon_id,
+      shipping,
+      payment,
+      subtotal,
+      freight,
+      total,
+      recipient,
+      list,
+    } = order;
 
     const products = await checkProducts(list);
-
+    if (coupon_id) {
+      const couponUsed = await couponModel.checkCoupon(userId, coupon_id);
+      if (couponUsed) throw new ValidationError("invalid coupon used");
+    }
+    const discount = coupon_id ? await couponModel.getCoupon(coupon_id) : 0;
+    if (subtotal + freight - discount !== total)
+      throw new ValidationError("invalid total price");
     const { orderId, orderNumber } = await placeOrder({
       userId,
       orderInfo: {
@@ -296,9 +311,13 @@ export async function checkout(req: Request, res: Response) {
       products,
       connection,
     });
+    if (coupon_id) {
+      await couponModel.UseCoupon(coupon_id);
+    }
 
     res.status(200).json({ data: { number: orderNumber } });
   } catch (err) {
+    console.log(err);
     if (err instanceof ValidationError) {
       res.status(400).json({ errors: err.message });
       return;
@@ -310,5 +329,30 @@ export async function checkout(req: Request, res: Response) {
     res.status(500).json({ errors: "checkout failed" });
   } finally {
     connection.release();
+  }
+}
+
+export async function getUserCoupons(req: Request, res: Response) {
+  try {
+    const userId = res.locals.userId;
+    const userCoupons = await couponModel.getUserCoupons(userId);
+    const coupons = userCoupons.map((item) => ({
+      id: item.id,
+      type: item.type,
+      description: item.description,
+      discount: item.discount,
+      expire_time: item.expire_time,
+      used: Boolean(item.used),
+    }));
+    res.status(200).json({
+      data: {
+        coupon: coupons,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ errors: err instanceof Error ? err.message : String(err) });
   }
 }

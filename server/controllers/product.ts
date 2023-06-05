@@ -9,11 +9,11 @@ import * as productModel from "../models/product.js";
 import * as productImageModel from "../models/productImage.js";
 import * as productVariantModel from "../models/productVariant.js";
 
-function mapId<Item extends { id: number }>(item: Item) {
+export function mapId<Item extends { id: number }>(item: Item) {
   return item.id;
 }
 
-function mapImages(imagesObj: {
+export function mapImages(imagesObj: {
   [productId: string]: { main_image: string; images: string[] };
 }) {
   return <Product extends { id: number }>(product: Product) => ({
@@ -27,7 +27,7 @@ function mapImages(imagesObj: {
   });
 }
 
-function mapVariants(variantsObj: {
+export function mapVariants(variantsObj: {
   [productId: string]: {
     variants: {
       color_code: string;
