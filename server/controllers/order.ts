@@ -166,6 +166,7 @@ async function checkProducts(inputList: ProductInput[]): Promise<Product[]> {
 
 async function placeOrder({
   userId,
+  orderInfo,
   recipient,
   products,
   connection,

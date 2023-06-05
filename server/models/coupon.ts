@@ -68,7 +68,7 @@ export async function checkCoupon(user_id: number, coupon_id: number) {
   const user_coupon = z.array(checkCouponSchema).parse(results);
   const result = user_coupon.filter((ele) => ele.coupon_id === coupon_id);
 
-  return result ? result : true;
+  return result[0] ? result[0].used : true;
 }
 
 export async function checkRecord(user_id: number) {
