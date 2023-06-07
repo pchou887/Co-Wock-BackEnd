@@ -9,14 +9,22 @@ import { mapId, mapImages, mapVariants } from "./product.js";
 
 export async function chatboxProductForFront(req: Request, res: Response) {
   try {
-    const { message } = req.body.data;
+    const { type } = req.body.data;
+
+    if (type === "divination") {
+      res.status(200).json({
+        data: {
+          campaign: "divination",
+          url: "/divination",
+          image: "https://hyperushle.com/assets/divination/divination.png",
+        },
+      });
+      return;
+    }
 
     const productsData =
-      message === "dress" ||
-      message === "jeans" ||
-      message === "new" ||
-      message === "hots"
-        ? await productModel.getChatboxProductForFront(message)
+      type === "dress" || type === "jeans" || type === "new" || type === "hots"
+        ? await productModel.getChatboxProductForFront(type)
         : false;
     if (!productsData) throw new ValidationError("message wrong");
 
@@ -35,14 +43,20 @@ export async function chatboxProductForFront(req: Request, res: Response) {
 
 export async function chatboxProductForiOS(req: Request, res: Response) {
   try {
-    const { message } = req.body.data;
+    const { type } = req.body.data;
+
+    if (type === "divination") {
+      res.status(200).json({
+        data: {
+          image: "https://hyperushle.com/assets/divination/divination.png",
+        },
+      });
+      return;
+    }
 
     const productsData =
-      message === "dress" ||
-      message === "jeans" ||
-      message === "new" ||
-      message === "hots"
-        ? await productModel.getChatboxProductForiOS(message)
+      type === "dress" || type === "jeans" || type === "new" || type === "hots"
+        ? await productModel.getChatboxProductForiOS(type)
         : false;
     if (!productsData) throw new ValidationError("message wrong");
 
@@ -57,9 +71,7 @@ export async function chatboxProductForiOS(req: Request, res: Response) {
       .map(mapImages(imagesObj))
       .map(mapVariants(variantsObj));
 
-    res.status(200).json({
-      data: products[0],
-    });
+    res.status(200).json({ data: products[0] });
   } catch (err) {
     if (err instanceof Error) {
       res.status(400).json({ errors: err.message });
